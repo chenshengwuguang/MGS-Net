@@ -1,0 +1,82 @@
+# Pipeline demonstration with reduced width; the full model uses 32 base channels.
+experiment:
+  name: mgs_net
+  output_dir: runs/synthetic
+
+model:
+  name: mgs_net
+  in_channels: 1
+  num_classes: 5
+  base_channels: 4
+  norm: group
+
+data:
+  root: generated/synthetic
+  image_mode: L
+  shape_line_aspect_ratio: 3.0
+  shape_small_area_threshold: 128.0
+  class_names:
+    - incomplete_penetration
+    - lack_of_fusion
+    - porosity
+    - slag_inclusion
+  train_split: splits/train.txt
+  val_split: splits/val.txt
+  test_split: splits/test.txt
+
+loss:
+  name: focal_dice_boundary
+  num_classes: 5
+  focal_weight: 0.5
+  dice_weight: 0.3
+  boundary_weight: 0.2
+  aux_shape_weight: 0.2
+  star_shape_weight: 0.03
+  star_shape_max_centers: 16
+  star_shape_temperature: 0.08
+  star_shape_downsample: 4
+  star_shape_class_weights:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.8
+  horizontal_shape_weight: 0.03
+  horizontal_shape_downsample: 4
+  horizontal_shape_class_weights:
+    - 0.0
+    - 1.0
+    - 1.0
+    - 0.0
+    - 0.0
+  gamma: 2.0
+  boundary_radius: 2
+  include_background_in_dice: false
+  include_background_in_boundary: false
+  alpha:
+    - 0.2
+    - 1.0
+    - 1.0
+    - 1.0
+    - 1.0
+
+train:
+  seed: 42
+  device: cpu
+  device_ids: []
+  epochs: 2
+  batch_size: 1
+  num_workers: 0
+  pin_memory: false
+  prefetch_factor: 1
+  persistent_workers: false
+  multiprocessing_context: spawn
+  lr: 0.0008
+  weight_decay: 0.0
+  scheduler:
+    name: cosine
+    t_max: 2
+    eta_min: 0.000001
+  early_stopping:
+    patience: 40
+    min_delta: 0.0

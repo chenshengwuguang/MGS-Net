@@ -1,0 +1,8 @@
+include LICENSE
+include README*.md
+include release-files.txt
+recursive-include configs *.yaml
+recursive-include docs *.md
+recursive-include scripts *.py
+recursive-include tests *.py
+
